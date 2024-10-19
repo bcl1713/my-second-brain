@@ -1,7 +1,7 @@
 ---
 title: "My Second Brain Outline"
 date: "2024-10-19"
-tags: ["personal", "development"]
+tags: ["personal", "development", "project"]
 summary: "Outline of steps to accomplish my second brain project"
 ---
 ## Step 1: Set Up the Basic Next.js App
