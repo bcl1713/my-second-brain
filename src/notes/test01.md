@@ -8,3 +8,4 @@ summary: "A brief summary of what this note is about"
 ## This is a test
 
 Of the markdown system to include **markdown** syntax.
+[[my second brain]]
