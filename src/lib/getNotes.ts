@@ -4,47 +4,61 @@ import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
 import { visit } from 'unist-util-visit';
-import { Node } from 'unist';
+import { Node, Literal, Parent } from 'unist';
 
 function remarkLinkifyNotes() {
-  return function transsformer(tree: Node) {
-    visit(tree, 'text', (node: any) => {
-      const linkRegex = /\[\[([^\]]+)\]\]/g;
-      const matches = [...node.value.matchAll(linkRegex)];
+  return function transformer(tree: Node) {
+    visit(tree, 'text', (node: Node) => {
+      // Check if the node is a Literal type
+      if (node.type === 'text') {
+        const literalNode = node as Literal;
+        const value = literalNode.value as string;
 
-      if (matches.length > 0) {
-        const newChildren = [];
-        let lastIndex = 0;
+        const linkRegex = /\[\[([^\]]+)\]\]/g
+        const matches = value.match(linkRegex);
 
-        for (const match of matches) {
-          const [fullMatch, noteTitle] = match;
-          const start = match.index;
+        if (matches) {
+          const newChildren = [];
+          let lastIndex = 0;
 
-          // Push text before the link
-          if (start > lastIndex) {
-            newChildren.push({ type: 'text', value: node.value.slice(lastIndex, start) });
+          for (const match of matches) {
+            const noteTitle = match.slice(2, -2);
+            const start = value.indexOf(match, lastIndex);
+
+            // Push text before the link
+            if (start > lastIndex) {
+              newChildren.push({
+                type: 'text',
+                value: value.slice(lastIndex, start)
+              });
+            }
+
+            // Push the link node
+            newChildren.push({
+              type: 'link',
+              url: `/notes/${noteTitle.replace(/\s+/g, '-')}`,
+              children: [{ type: 'text', value: noteTitle }],
+            });
+
+            lastIndex = start + match.length;
           }
 
-          // Push the link node
-          newChildren.push({
-            type: 'link',
-            url: `/notes/${noteTitle.replace(/\s+/g, '-')}`,
-            children: [{ type: 'text', value: noteTitle }],
-          });
+          // Push any remaining text after the last link
+          if (lastIndex < value.length) {
+            newChildren.push({
+              type: 'text',
+              value: value.slice(lastIndex)
+            });
+          }
 
-          lastIndex = start + fullMatch.length;
+          // Update node type and children
+          const parentNode = node as Parent;
+          parentNode.type = 'paragraph';
+          parentNode.children = newChildren;
         }
-
-        // Push any remaining text after the last link
-        if (lastIndex < node.value.length) {
-          newChildren.push({ type: 'text', value: node.value.slice(lastIndex) });
-        }
-
-        node.type = 'paragraph';
-        node.children = newChildren;
       }
-    });
-  };
+    })
+  }
 }
 
 const notesDirectory = path.join(process.cwd(), 'src', 'notes');
