@@ -1,4 +1,10 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 
-export default nextConfig;
+const withMDX = require('@next/mdx')({
+  extension: /\.mdx?$/
+});
+
+export default withMDX({
+  pageExtensions: ['ts', 'tsx', 'mdx'],
+});
