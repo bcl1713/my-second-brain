@@ -1,8 +1,7 @@
-import { useRouter } from "next/router";
+import { useParams } from "next/navigation";
 
 export default function Note() {
-  const router = useRouter();
-  const { id } = router.query;
+  const { id } = useParams();
 
   return <div>Note ID: {id}</div>;
 }
