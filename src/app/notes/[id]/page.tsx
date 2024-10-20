@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { getNoteById } from '../../../lib/getNotes';
 
 export default async function NotePage({ params }: { params: { id: string } }) {
