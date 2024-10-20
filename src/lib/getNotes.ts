@@ -1,15 +1,14 @@
 import { supabase } from './supabase';
 
 // Fetch all notes from Supabase
-export async function getAllNoteIds() {
+export async function getAllNotes() {
   const { data, error } = await supabase
     .from('notes')
-    .select('id');
+    .select('id, title')
+    .order('date', { ascending: false });
 
   if (error) throw new Error(error.message);
-  return data.map((note) => ({
-    params: { id: note.id },
-  }));
+  return data;
 }
 
 // Fetch a specific note by ID
