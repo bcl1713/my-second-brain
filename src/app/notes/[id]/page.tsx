@@ -1,9 +1,8 @@
 import Link from 'next/link';
-import { getNoteById, getBacklinks } from '../../../lib/getNotes';
+import { getNoteById } from '../../../lib/getNotes';
 
 export default async function NotePage({ params }: { params: { id: string } }) {
   const note = await getNoteById(params.id);
-  const backlinks = getBacklinks(params.id);
 
   if (!note) {
     return (
@@ -27,35 +26,35 @@ export default async function NotePage({ params }: { params: { id: string } }) {
       )}
       <div className='prose dark:prose-invert' dangerouslySetInnerHTML={{ __html: note.contentHtml }} />
 
-      {note.links && note.links.length > 0 && (
-        <div className='mt-8'>
-          <h2 className='text-xl font-semibold text-gray-700 dark:text-gray-300'>Links</h2>
-          <ul className='list-disc pl-6'>
-            {note.links.map((link) => (
-              <li key={link}>
-                <Link href={`/notes/${link.replace(/\s+/g, '-')}`} className='text-blue-500 hover:underline'>
-                  {link}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* {note.links && note.links.length > 0 && ( */}
+      {/*   <div className='mt-8'> */}
+      {/*     <h2 className='text-xl font-semibold text-gray-700 dark:text-gray-300'>Links</h2> */}
+      {/*     <ul className='list-disc pl-6'> */}
+      {/*       {note.links.map((link) => ( */}
+      {/*         <li key={link}> */}
+      {/*           <Link href={`/notes/${link.replace(/\s+/g, '-')}`} className='text-blue-500 hover:underline'> */}
+      {/*             {link} */}
+      {/*           </Link> */}
+      {/*         </li> */}
+      {/*       ))} */}
+      {/*     </ul> */}
+      {/*   </div> */}
+      {/* )} */}
 
-      {backlinks && backlinks.length > 0 && (
-        <div className='mt-8'>
-          <h2 className='text-xl font-semibold text-gray-700 dark:text-gray-300'>BackLinks</h2>
-          <ul className='list-disc pl-6'>
-            {backlinks.map((backlink) => (
-              <li key={backlink}>
-                <Link href={`/notes/${backlink}`} className='text-blue-500 hover:underline'>
-                  {decodeURIComponent(backlink.replace(/-/g, ' '))}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* {backlinks && backlinks.length > 0 && ( */}
+      {/*   <div className='mt-8'> */}
+      {/*     <h2 className='text-xl font-semibold text-gray-700 dark:text-gray-300'>BackLinks</h2> */}
+      {/*     <ul className='list-disc pl-6'> */}
+      {/*       {backlinks.map((backlink) => ( */}
+      {/*         <li key={backlink}> */}
+      {/*           <Link href={`/notes/${backlink}`} className='text-blue-500 hover:underline'> */}
+      {/*             {decodeURIComponent(backlink.replace(/-/g, ' '))} */}
+      {/*           </Link> */}
+      {/*         </li> */}
+      {/*       ))} */}
+      {/*     </ul> */}
+      {/*   </div> */}
+      {/* )} */}
     </div>
   );
 }
