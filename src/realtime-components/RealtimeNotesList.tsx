@@ -19,11 +19,11 @@ export default function RealtimeNotesList({ serverNotes, }: { serverNotes: Note[
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase, notes, setNotes])
+  }, [notes, setNotes])
   return (
     <ul>
       {notes.map((note) => (
-        <li id={note.id}>
+        <li key={note.id}>
           <Link href={`/notes/${note.id}`}>
             {note.title}
           </Link>
