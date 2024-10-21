@@ -1,10 +1,10 @@
-import Sidebar from '@/components/Sidebar';
-import './globals.css';
-import DarkModeToggle from '@/components/DarkModeToggle';
+import "./globals.css";
+import React from "react";
+import Sidebar from "@/components/Sidebar";
 
 export const metadata = {
-  title: 'My Second Brain',
-  description: 'A second brain app built with Next.js',
+  description: "A second brain app built with Next.js",
+  title: "My Second Brain",
 };
 
 export default function RootLayout({
@@ -23,11 +23,10 @@ export default function RootLayout({
         <Sidebar />
         {/* Main Content Area */}
         <div className="flex-1 p-6 bg-gray-100 dark:bg-gray-800 overflow-y-auto">
-          <header className='flex justify-between mb-4'>
-            <h1 className='text-2xl font-bold text-gray-900 dark:text-gray-100'>
+          <header className="flex justify-between mb-4">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               My Notes
             </h1>
-            <DarkModeToggle />
           </header>
           {children}
         </div>

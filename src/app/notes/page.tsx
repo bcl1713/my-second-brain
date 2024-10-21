@@ -1,6 +1,3 @@
 export default function NotesPage() {
-
-  return (
-    <div>TODO</div>
-  );
+  return <div>TODO</div>;
 }

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { supabase } from "@/lib/supabase";
 import { Note } from "@/types/Note";
@@ -6,34 +6,48 @@ import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import Link from "next/link";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
-export default function RealtimeNotesList({ serverNotes, }: { serverNotes: Note[]; }) {
-  const [notes, setNotes] = useState(serverNotes)
+export default function RealtimeNotesList({
+  serverNotes,
+}: {
+  serverNotes: Note[];
+}) {
+  const [notes, setNotes] = useState(serverNotes);
 
   useEffect(() => {
-    const channel = supabase.channel('realtime notes').on('postgres_changes', {
-      event: '*', schema: 'public', table: 'notes'
-    }, (payload: RealtimePostgresChangesPayload<Note>) => {
-      handlePayload(payload, setNotes);
-    }).subscribe();
+    const channel = supabase
+      .channel("realtime notes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notes",
+        },
+        (payload: RealtimePostgresChangesPayload<Note>) => {
+          handlePayload(payload, setNotes);
+        },
+      )
+      .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [notes, setNotes])
+  }, [notes, setNotes]);
   return (
     <ul>
       {notes.map((note) => (
         <li key={note.id}>
-          <Link href={`/notes/${note.id}`}>
-            {note.title}
-          </Link>
+          <Link href={`/notes/${note.id}`}>{note.title}</Link>
         </li>
       ))}
     </ul>
-  )
+  );
 }
-function handlePayload(payload: RealtimePostgresChangesPayload<Note>, setNotes: Dispatch<SetStateAction<Note[]>>) {
-  console.log(payload)
+function handlePayload(
+  payload: RealtimePostgresChangesPayload<Note>,
+  setNotes: Dispatch<SetStateAction<Note[]>>,
+) {
+  console.log(payload);
   if (payload.eventType == "INSERT") {
     addNote(payload.new as Note);
   } else if (payload.eventType == "DELETE") {
@@ -44,12 +58,14 @@ function handlePayload(payload: RealtimePostgresChangesPayload<Note>, setNotes: 
   }
 
   function removeNote(oldNote: Note) {
-    setNotes(prev => prev.filter(note => {
-      return note.id != oldNote.id;
-    }));
+    setNotes((prev) =>
+      prev.filter((note) => {
+        return note.id != oldNote.id;
+      }),
+    );
   }
 
   function addNote(newNote: Note) {
-    setNotes(prev => [...prev, newNote]);
+    setNotes((prev) => [...prev, newNote]);
   }
 }

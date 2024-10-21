@@ -1,11 +1,11 @@
-import { supabase } from './supabase';
+import { supabase } from "./supabase";
 
 // Fetch all notes from Supabase
 export async function getAllNotes() {
   const { data, error } = await supabase
-    .from('notes')
-    .select('id, title')
-    .order('date', { ascending: false });
+    .from("notes")
+    .select("id, title")
+    .order("date", { ascending: false });
 
   if (error) throw new Error(error.message);
   return data;
@@ -14,24 +14,21 @@ export async function getAllNotes() {
 // Fetch a specific note by ID
 export async function getNoteById(id: string) {
   const { data, error } = await supabase
-    .from('notes')
-    .select('title, content, date, tags, summary')
-    .eq('id', id)
-    .limit(1)
+    .from("notes")
+    .select("title, content, date, tags, summary")
+    .eq("id", id)
     .single();
 
   if (error) {
-    console.error('Error fetching note:', error);
-    return null
+    return null;
   }
 
   return {
-    id,
-    contentHtml: data.content, // For now, we return the raw Markdown, but will convert to HTML later
-    title: data.title,
+    contentHtml: data.content,
     date: data.date,
-    tags: data.tags,
+    id,
     summary: data.summary,
+    tags: data.tags,
+    title: data.title,
   };
 }
-

@@ -4,6 +4,7 @@ date: "2024-10-19"
 tags: ["personal", "development", "project"]
 summary: "Outline of steps to accomplish my second brain project"
 ---
+
 ## Step 1: Set Up the Basic Next.js App
 
 - 1.1: Initialize the Next.js app (which you've done).
@@ -24,12 +25,12 @@ summary: "Outline of steps to accomplish my second brain project"
 ## Step 3: Implement CRUD Functionality with Supabase
 
 - 3.1: Create (C): Implement functionality to create new notes and store them
-in Supabase.
+  in Supabase.
   - Create a form for note input (title, content, tags, etc.).
   - Post the data to Supabase in Markdown format.
 - 3.2: Read (R): Fetch notes from Supabase.
   - Modify your existing getAllNoteIds and getNoteById functions to query the
-Supabase database instead of reading from the file system.
+    Supabase database instead of reading from the file system.
   - Render Markdown content as before using remark.
 - 3.3: Update (U): Add the ability to edit notes.
   - Fetch existing note content, allow edits, and send updates back to Supabase.
@@ -52,5 +53,5 @@ Supabase database instead of reading from the file system.
 
 - 6.1: Set up GPT API to analyze your notes.
 - 6.2: Implement a search/query feature where you can ask GPT questions about
-your notes.
+  your notes.
   - Feed GPT the note content retrieved from Supabase.
