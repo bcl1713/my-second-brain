@@ -12,8 +12,8 @@ export default function RealtimeNotesList({ serverNotes, }: { serverNotes: Note[
   useEffect(() => {
     const channel = supabase.channel('realtime notes').on('postgres_changes', {
       event: '*', schema: 'public', table: 'notes'
-    }, (payload) => {
-      handlePayload(payload, notes, setNotes);
+    }, (payload: RealtimePostgresChangesPayload<Note>) => {
+      handlePayload(payload, setNotes);
     }).subscribe();
 
     return () => {
@@ -32,7 +32,7 @@ export default function RealtimeNotesList({ serverNotes, }: { serverNotes: Note[
     </ul>
   )
 }
-function handlePayload(payload: RealtimePostgresChangesPayload<{ [key: string]: any; }>, notes: Note[], setNotes: Dispatch<SetStateAction<Note[]>>) {
+function handlePayload(payload: RealtimePostgresChangesPayload<Note>, setNotes: Dispatch<SetStateAction<Note[]>>) {
   console.log(payload)
   if (payload.eventType == "INSERT") {
     addNote(payload.new as Note);
