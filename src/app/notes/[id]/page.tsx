@@ -1,5 +1,7 @@
 import { getNoteById } from '../../../lib/getNotes';
 
+export const revalidate = 0;
+
 export default async function NotePage({ params }: { params: { id: string } }) {
   const note = await getNoteById(params.id);
 

@@ -2,6 +2,8 @@ import { getAllNotes } from "@/lib/getNotes";
 import RealtimeNotesList from "@/realtime-components/RealtimeNotesList";
 import { Note } from "@/types/Note";
 
+export const revalidate = 0 // Ensure we have the latest version of the note list
+
 export default async function Sidebar() {
   const notes = await getAllNotes() as Note[];
 
