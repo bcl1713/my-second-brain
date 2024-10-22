@@ -6,9 +6,7 @@ export async function getAllNotes() {
     .from("notes")
     .select("id, title")
     .order("date", { ascending: false });
-
-  if (error) throw new Error(error.message);
-  return data;
+  return { data, error };
 }
 
 // Fetch a specific note by ID
