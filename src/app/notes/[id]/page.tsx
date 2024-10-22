@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase";
 import { Note } from "@/types/Note";
 import { remark } from "remark";
 import html from "remark-html";
+import { fetchNoteById } from "@/lib/notes";
 
 export default function NotePage({ params }: { params: { id: string } }) {
   const [note, setNote] = useState<Note | null>(null);
@@ -13,15 +13,9 @@ export default function NotePage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     const fetchNote = async () => {
-      const { data, error } = await supabase
-        .from("notes")
-        .select("*")
-        .eq("id", params.id)
-        .single();
+      try {
+        const data = await fetchNoteById(params.id);
 
-      if (error) {
-        setError("Note not found.");
-      } else {
         const parsedContent = await remark()
           .use(html)
           .process(data.content || "");
@@ -30,9 +24,10 @@ export default function NotePage({ params }: { params: { id: string } }) {
           ...data,
           content: parsedContent.toString(),
         } as Note);
+      } catch (err) {
+        setError("Note not found." + err);
       }
     };
-
     fetchNote();
   }, [params.id]);
 
