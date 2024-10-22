@@ -6,63 +6,55 @@ import { supabase } from "@/lib/supabase";
 import { Note } from "@/types/Note";
 
 export default function EditNotePage({ params }: { params: { id: string } }) {
-  const noteId = params.id;
   const router = useRouter();
   const [note, setNote] = useState<Note | null>(null);
-  const [error, setError] = useState("");
+  const [tags, setTags] = useState<string>(""); // Handle tags as a string for input
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch the note by id
     const fetchNote = async () => {
       const { data, error } = await supabase
         .from("notes")
-        .select("id, title, content, date, tags, summary")
-        .eq("id", noteId)
+        .select("*")
+        .eq("id", params.id)
         .single();
 
       if (error) {
-        setError("Failed to fetch note");
+        setError("Note not found.");
       } else {
-        setNote(data);
+        setNote(data as Note);
+        setTags((data.tags || []).join(", ")); // Convert tags array to a comma-separated string
       }
     };
 
     fetchNote();
-  }, [noteId]);
+  }, [params.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (note) {
-      const { error } = await supabase
-        .from("notes")
-        .update({
-          title: note.title,
-          content: note.content,
-          tags: note.tags,
-          summary: note.summary,
-        })
-        .eq("id", noteId);
+    if (!note) return;
 
-      if (error) {
-        setError("Failed to update note");
-      } else {
-        router.push(`/notes/${noteId}`);
-      }
+    // Prepare updated note data
+    const updatedNote = {
+      ...note,
+      tags: tags.split(",").map((tag) => tag.trim()), // Convert tags string back to an array
+    };
+
+    const { error } = await supabase
+      .from("notes")
+      .update(updatedNote)
+      .eq("id", note.id);
+
+    if (error) {
+      setError("Failed to update the note");
+    } else {
+      router.push(`/notes/${note.id}`);
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setNote((prevNote) =>
-      prevNote ? { ...prevNote, [name]: value } : prevNote,
-    );
-  };
-
   if (!note) {
-    return <p>Loading...</p>;
+    return <div>Loading...</div>;
   }
 
   return (
@@ -75,9 +67,8 @@ export default function EditNotePage({ params }: { params: { id: string } }) {
         </label>
         <input
           type="text"
-          name="title"
-          value={note?.title ?? ""}
-          onChange={handleChange}
+          value={note.title || ""}
+          onChange={(e) => setNote({ ...note, title: e.target.value })}
           className="w-full p-2 border border-gray-300 rounded"
           required
         />
@@ -87,9 +78,8 @@ export default function EditNotePage({ params }: { params: { id: string } }) {
           Content
         </label>
         <textarea
-          name="content"
-          value={note?.content ?? ""}
-          onChange={handleChange}
+          value={note.content || ""}
+          onChange={(e) => setNote({ ...note, content: e.target.value })}
           className="w-full p-2 border border-gray-300 rounded"
           rows={5}
           required
@@ -101,9 +91,8 @@ export default function EditNotePage({ params }: { params: { id: string } }) {
         </label>
         <input
           type="text"
-          name="tags"
-          value={note.tags?.join(", ") || ""}
-          onChange={handleChange}
+          value={tags}
+          onChange={(e) => setTags(e.target.value)}
           className="w-full p-2 border border-gray-300 rounded"
         />
       </div>
@@ -113,14 +102,13 @@ export default function EditNotePage({ params }: { params: { id: string } }) {
         </label>
         <input
           type="text"
-          name="summary"
-          value={note?.summary ?? ""}
-          onChange={handleChange}
+          value={note.summary || ""}
+          onChange={(e) => setNote({ ...note, summary: e.target.value })}
           className="w-full p-2 border border-gray-300 rounded"
         />
       </div>
       <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-        Save Note
+        Save Changes
       </button>
     </form>
   );

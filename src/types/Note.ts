@@ -3,6 +3,6 @@ export type Note = {
   date: string;
   content?: string | null;
   summary?: string | null;
-  tags?: string[] | null;
+  tags?: string[];
   title?: string | null;
-}
+};
