@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { Note } from "@/types/Note";
+import { remark } from "remark";
+import html from "remark-html";
 
 export default function NotePage({ params }: { params: { id: string } }) {
   const [note, setNote] = useState<Note | null>(null);
@@ -20,7 +22,14 @@ export default function NotePage({ params }: { params: { id: string } }) {
       if (error) {
         setError("Note not found.");
       } else {
-        setNote(data as Note);
+        const parsedContent = await remark()
+          .use(html)
+          .process(data.content || "");
+
+        setNote({
+          ...data,
+          content: parsedContent.toString(),
+        } as Note);
       }
     };
 
@@ -58,9 +67,10 @@ export default function NotePage({ params }: { params: { id: string } }) {
         </p>
       )}
       {note.content && (
-        <div className="prose dark:prose-invert">
-          <p>{note.content}</p>
-        </div>
+        <div
+          className="prose dark:prose-invert"
+          dangerouslySetInnerHTML={{ __html: note.content }}
+        />
       )}
       <Link href={`/notes/${note.id}/edit`}>
         <button className="bg-gray-700 text-white p-2 rounded">Edit</button>
