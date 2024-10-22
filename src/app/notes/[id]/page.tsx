@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getNoteById } from "../../../lib/getNotes";
 
 export const revalidate = 0;
@@ -37,6 +38,9 @@ export default async function NotePage({ params }: { params: { id: string } }) {
         className="prose dark:prose-invert"
         dangerouslySetInnerHTML={{ __html: note.contentHtml }}
       />
+      <Link href={`/notes/${note.id}/edit`}>
+        <button className="bg-gray-700 text-white p-2 rounded">Edit</button>
+      </Link>
     </div>
   );
 }
