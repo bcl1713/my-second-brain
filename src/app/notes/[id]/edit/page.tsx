@@ -53,63 +53,95 @@ export default function EditNotePage({ params }: { params: { id: string } }) {
     }
   };
 
+  const handleDelete = async () => {
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this note?",
+    );
+
+    if (isConfirmed) {
+      const { error } = await supabase
+        .from("notes")
+        .delete()
+        .eq("id", params.id);
+
+      if (error) {
+        setError("Failed to delete the note");
+      } else {
+        // Redirect to the main notes list after successful deletion
+        router.push("/notes");
+      }
+    }
+  };
+
   if (!note) {
     return <div>Loading...</div>;
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Edit Note</h2>
-      {error && <p className="text-red-500">{error}</p>}
-      <div className="mb-4">
-        <label className="block text-gray-700 dark:text-gray-300 mb-2">
-          Title
-        </label>
-        <input
-          type="text"
-          value={note.title || ""}
-          onChange={(e) => setNote({ ...note, title: e.target.value })}
-          className="w-full p-2 border border-gray-300 rounded"
-          required
-        />
+    <>
+      <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-4">
+        <h2 className="text-2xl font-bold mb-4">Edit Note</h2>
+        {error && <p className="text-red-500">{error}</p>}
+        <div className="mb-4">
+          <label className="block text-gray-700 dark:text-gray-300 mb-2">
+            Title
+          </label>
+          <input
+            type="text"
+            value={note.title || ""}
+            onChange={(e) => setNote({ ...note, title: e.target.value })}
+            className="w-full p-2 border border-gray-300 rounded"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 dark:text-gray-300 mb-2">
+            Content
+          </label>
+          <textarea
+            value={note.content || ""}
+            onChange={(e) => setNote({ ...note, content: e.target.value })}
+            className="w-full p-2 border border-gray-300 rounded"
+            rows={5}
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 dark:text-gray-300 mb-2">
+            Tags (comma-separated)
+          </label>
+          <input
+            type="text"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 dark:text-gray-300 mb-2">
+            Summary
+          </label>
+          <input
+            type="text"
+            value={note.summary || ""}
+            onChange={(e) => setNote({ ...note, summary: e.target.value })}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
+          Save Changes
+        </button>
+      </form>
+
+      {/* Delete button to delete the note */}
+      <div className="max-w-lg mx-auto p-4">
+        <button
+          onClick={handleDelete}
+          className="bg-red-500 text-white p-2 rounded mt-4"
+        >
+          Delete Note
+        </button>
       </div>
-      <div className="mb-4">
-        <label className="block text-gray-700 dark:text-gray-300 mb-2">
-          Content
-        </label>
-        <textarea
-          value={note.content || ""}
-          onChange={(e) => setNote({ ...note, content: e.target.value })}
-          className="w-full p-2 border border-gray-300 rounded"
-          rows={5}
-          required
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-gray-700 dark:text-gray-300 mb-2">
-          Tags (comma-separated)
-        </label>
-        <input
-          type="text"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-gray-700 dark:text-gray-300 mb-2">
-          Summary
-        </label>
-        <input
-          type="text"
-          value={note.summary || ""}
-          onChange={(e) => setNote({ ...note, summary: e.target.value })}
-          className="w-full p-2 border border-gray-300 rounded"
-        />
-      </div>
-      <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-        Save Changes
-      </button>
-    </form>
+    </>
   );
 }
