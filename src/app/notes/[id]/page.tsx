@@ -1,15 +1,38 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getNoteById } from "../../../lib/getNotes";
+import { supabase } from "@/lib/supabase";
+import { Note } from "@/types/Note";
 
-export const revalidate = 0;
+export default function NotePage({ params }: { params: { id: string } }) {
+  const [note, setNote] = useState<Note | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-export default async function NotePage({ params }: { params: { id: string } }) {
-  const note = await getNoteById(params.id);
+  useEffect(() => {
+    const fetchNote = async () => {
+      const { data, error } = await supabase
+        .from("notes")
+        .select("*")
+        .eq("id", params.id)
+        .single();
+
+      if (error) {
+        setError("Note not found.");
+      } else {
+        setNote(data as Note);
+      }
+    };
+
+    fetchNote();
+  }, [params.id]);
+
+  if (error) {
+    return <div>{error} Eventually we should be able to create it here</div>;
+  }
 
   if (!note) {
-    return (
-      <div>Note not found. Eventually we should be able to create it here</div>
-    );
+    return <div>Loading...</div>;
   }
 
   return (
@@ -34,10 +57,11 @@ export default async function NotePage({ params }: { params: { id: string } }) {
           <strong>Tags:</strong> {note.tags.join(", ")}
         </p>
       )}
-      <div
-        className="prose dark:prose-invert"
-        dangerouslySetInnerHTML={{ __html: note.contentHtml }}
-      />
+      {note.content && (
+        <div className="prose dark:prose-invert">
+          <p>{note.content}</p>
+        </div>
+      )}
       <Link href={`/notes/${note.id}/edit`}>
         <button className="bg-gray-700 text-white p-2 rounded">Edit</button>
       </Link>
